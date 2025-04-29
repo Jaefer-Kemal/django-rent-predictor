@@ -1,0 +1,93 @@
+{% load form_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Rent Price Prediction</title>
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light background for better contrast */
+        }
+        .card {
+            border-radius: 1rem; /* Rounded corners for cards */
+        }
+        h1 {
+            color: #343a40; /* Dark text for header */
+        }
+        .btn-link {
+            color: #007bff; /* Bootstrap primary link color */
+        }
+    </style>
+</head>
+<body class="container my-5" style="scroll-behavior: smooth;">
+
+    <!-- Link to Upload a New File -->
+    <a href="{% url 'upload_csv' %}" class="btn btn-link float-end">Upload New File</a>
+
+    <h1 class="text-center mb-4">Predict Housing Rent Price</h1>
+
+    <!-- Prediction Form -->
+    <div class="card p-4 mb-4">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-6">
+                    {{ form.size.label_tag }}
+                    {{ form.size|add_class:"form-control" }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.bedrooms.label_tag }}
+                    {{ form.bedrooms|add_class:"form-control" }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.bathrooms.label_tag }}
+                    {{ form.bathrooms|add_class:"form-control" }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.neighborhood.label_tag }}
+                    {{ form.neighborhood|add_class:"form-control" }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.condition.label_tag }}
+                    {{ form.condition|add_class:"form-control" }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.distance.label_tag }}
+                    {{ form.distance|add_class:"form-control" }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3" onclick="scrollToPredictedPrice(event)">Predict</button>
+        </form>
+    </div>
+    <div id="predicted-price-section">
+    {% if predicted_price %}
+        <div class="alert alert-success my-4" >
+            Predicted Rent Price: <strong>{{ predicted_price|floatformat:2 }} ETB</strong>
+        </div>
+    {% endif %}
+    </div>
+
+    <!-- Link to separate page for graphs -->
+    <a href="{% url 'graph_view' %}" class="btn btn-secondary mt-4">View Graphs</a>
+    <script>
+        function scrollToPredictedPrice(event) {
+            // Prevent the form from submitting immediately
+            event.preventDefault();
+            
+            // Submit the form
+            event.target.form.submit();
+    
+            // Set a timeout to allow the form to submit and the page to update
+            setTimeout(() => {
+                const section = document.getElementById('predicted-price-section');
+                if (section) {
+                    section.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 10); // Adjust time based on your needs, depending on how long the server takes to respond
+        }
+    </script>
+</body>
+</html>
